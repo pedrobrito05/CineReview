@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 
 #filme: atributos com o imagem, titulo, data de lancamento, elenco, genero, diretor, vizualizacoes, resumo
@@ -48,45 +49,19 @@ class Filme(models.Model):
     visualizacoes=models.IntegerField()
     resumo=models.CharField(max_length=500)
 
+class Review(models.Model): #vai ser uma relacao entre utilizador e filme
+    utilizador=models.ForeignKey(User, on_delete=models.CASCADE)
+    filme=models.ForeignKey(Filme, on_delete=models.CASCADE)
+    texto=models.CharField(max_length=500)
+    avaliacao=models.IntegerField(choices=[('1','1'), ('2','2'), ('3','3'), ('4','4'), ('5','5'), ('6','6'), ('7','7'), ('8','8'), ('9','9'), ('10','10')])
+    data=models.DateField(auto_now_add=True) #adiciona a data em que e inserido na bd
 
 
+#uma "tabela" de ligacao 1 para 1 com os utilizadores do django para podermos guardar dados sobre o mesmo sem alterar diretamente a tabela do django (podiamos usando a classe abstrata tho)
+class Utilizador(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    imagem=models.ImageField()
+    visto = models.ManyToManyField(Filme, blank=True) #muitos para muitos com filme (lista de filmes vistos)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    # para aceder a estes dados temos de fazer usr.Utilizador.imagem por exemplo
 

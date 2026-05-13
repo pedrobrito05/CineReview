@@ -31,15 +31,13 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    "app_utilizadores.apps.AppUtilizadoresConfig",
-    "app_reviews.apps.AppReviewsConfig",
-    "app_filme.apps.AppFilmeConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "app_cineReview.apps.AppCinereviewConfig",
     "rest_framework",
     "corsheaders",
 ]
@@ -123,7 +121,3 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
-
-
-#ADICIONEI ESTA LINHA ASSIMM DEIXA NOS USAR OS UTILIZADORES QUE CRIAMOS NA APP app_utilizadores
-AUTH_USER_MODEL = 'app_utilizadores.Utilizador'
