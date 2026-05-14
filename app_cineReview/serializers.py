@@ -28,7 +28,7 @@ class FilmeSerializer(serializers.ModelSerializer):
     diretor = DiretorSerializer(many=True, read_only=True)
     class Meta:
         model=Filme
-        fields=('id','imagem', 'titulo', 'lancamento','elenco', 'diretor', 'genero', 'visualizacoes', 'resumo')
+        fields=('id','imagem', 'titulo', 'lancamento','elenco', 'diretor', 'genero', 'resumo')
 
 
 class UtilizadorSerializer(serializers.ModelSerializer):
@@ -40,9 +40,22 @@ class UtilizadorSerializer(serializers.ModelSerializer):
         fields = ('id', 'user', 'imagem', 'visto')
 
 
+
+
+
 class ReviewSerializer(serializers.ModelSerializer):
-    utilizador=UtilizadorSerializer(read_only=True)
-    filme=FilmeSerializer(read_only=True)
+    utilizador = UtilizadorSerializer(read_only=True)
+    filme = FilmeSerializer(read_only=True)
+    gostos = UtilizadorSerializer(many=True, read_only=True)
+    total_gostos = serializers.SerializerMethodField()
+
+    def get_total_gostos(self, obj):
+        return obj.gostos.count()
+
     class Meta:
-        model=Review
-        fields=('id','utilizador', 'filme', 'texto', 'avaliacao', 'data')
+        model = Review
+        fields = ('id', 'utilizador', 'filme', 'texto', 'avaliacao', 'data', 'gostos', 'total_gostos')
+
+
+
+

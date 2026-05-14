@@ -1,11 +1,15 @@
+from itertools import count
+
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
+from django.db.models import Avg, Sum, Count
 from django.shortcuts import render
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from app_cineReview.models import Filme
-from app_cineReview.serializers import FilmeSerializer
+from app_cineReview.models import Filme, Review, Ator, Diretor, Utilizador
+from app_cineReview.serializers import FilmeSerializer, AtorSerializer, DiretorSerializer, ReviewSerializer
 
 
 #views do utilizador(login e logout)
@@ -43,4 +47,134 @@ def filmes(request):
 
 
 
+@api_view(['GET'])
+def detalhes(request, id):
+    try:
+        filme=Filme.objects.get(pk=id)
+    except Filme.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
+    serializer=FilmeSerializer(filme)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])  #todos os filmes de um ator com id
+def filmesDeAtor(request, id):
+    filmes = Filme.objects.filter(elenco__id=id)
+
+    if not filmes.exists():
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    serializer = FilmeSerializer(filmes, many=True)  # ← many=True
+    return Response(serializer.data)
+
+
+@api_view(['GET', 'POST']) #todos os atores
+def atores(request):
+    if request.method=='GET' :
+        atores=Ator.objects.all()
+        serializer=AtorSerializer(atores, many=True)
+        return Response(serializer.data)
+    elif request.method=='POST':
+        serializer=AtorSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET', 'POST']) #todos os diretores
+def diretores(request):
+    if request.method=='GET' :
+        diretores=Diretor.objects.all()
+        serializer=DiretorSerializer(diretores, many=True)
+        return Response(serializer.data)
+    elif request.method=='POST':
+        serializer=DiretorSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])  #todos os filmes de um ator com id
+def filmesDeDiretor(request, id):
+    filmes = Filme.objects.filter(diretor__id=id)
+
+    if not filmes.exists():
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    serializer = FilmeSerializer(filmes, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def classificacaoDeFilme(request, id):
+    try:
+        filme = Filme.objects.get(pk=id)
+    except Filme.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    nota = Review.objects.filter(filme=filme).aggregate(Avg('avaliacao'))
+
+    return Response({
+        'nota ': nota['avaliacao__avg'] #nota sem [] da avaliacao__avg:
+    })
+
+
+@api_view(['GET'])
+def visualizacoesDeUmFilme(request, id):
+    try:
+        filme = Filme.objects.get(pk=id)
+    except Filme.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    vis = Utilizador.objects.filter(visto=filme).aggregate(Sum('visto'))
+
+    return Response({
+        'visualizacoes ': vis['visto__sum']
+    })
+
+@api_view(['GET'])
+def filmesDeGenero(request, genero):
+    filmes = Filme.objects.filter(genero=genero)
+    if not filmes.exists():
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    serializer = FilmeSerializer(filmes, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def top10FilmesNotas(request):
+    filmes = Filme.objects.annotate(
+        nota=Avg('review__avaliacao')
+    ).order_by('-nota')[:10] #ordem decrescente
+
+    serializer = FilmeSerializer(filmes, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET', 'POST'])
+def reviews(request):
+    if request.method == 'GET':
+        review = Review.objects.all()
+        review=Review.objects.annotate(total_gostos=Count('gostos')).order_by('-total_gostos')
+        serializer = ReviewSerializer(review, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        serializer = ReviewSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def filmesVistosPorUtilizador(request, id):
+    try:
+        utilizador=Utilizador.objects.get(pk=id)
+    except Utilizador.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    filmes=utilizador.visto.all()
+    serializer = FilmeSerializer(filmes, many=True)
+    return Response(serializer.data)

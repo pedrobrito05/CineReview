@@ -16,45 +16,38 @@ class Filme(models.Model):
     lancamento=models.DateField()
     elenco=models.ManyToManyField(Ator, blank=True)
     GENEROS = [
-        ('action', 'Action'),
-        ('adventure', 'Adventure'),
-        ('animation', 'Animation'),
-        ('biography', 'Biography'),
-        ('comedy', 'Comedy'),
+        ('action', 'Ação'),
+        ('adventure', 'Aventura'),
+        ('animation', 'Animação'),
+        ('biography', 'Biografia'),
+        ('comedy', 'Comédia'),
         ('crime', 'Crime'),
-        ('documentary', 'Documentary'),
+        ('documentary', 'Documentário'),
         ('drama', 'Drama'),
-        ('family', 'Family'),
-        ('fantasy', 'Fantasy'),
+        ('family', 'Família'),
+        ('fantasy', 'Fantasia'),
         ('film_noir', 'Film-Noir'),
-        ('game_show', 'Game-Show'),
-        ('history', 'History'),
-        ('horror', 'Horror'),
-        ('music', 'Music'),
+        ('game_show', 'Programa de Jogos'),
+        ('history', 'História'),
+        ('horror', 'Terror'),
+        ('music', 'Música'),
         ('musical', 'Musical'),
-        ('mystery', 'Mystery'),
-        ('news', 'News'),
-        ('reality_tv', 'Reality-TV'),
+        ('mystery', 'Mistério'),
+        ('news', 'Notícias'),
+        ('reality_tv', 'Reality Show'),
         ('romance', 'Romance'),
-        ('sci_fi', 'Sci-Fi'),
-        ('short', 'Short'),
-        ('sport', 'Sport'),
-        ('talk_show', 'Talk-Show'),
+        ('sci_fi', 'Ficção Científica'),
+        ('short', 'Curta-Metragem'),
+        ('sport', 'Desporto'),
+        ('talk_show', 'Talk Show'),
         ('thriller', 'Thriller'),
-        ('war', 'War'),
+        ('war', 'Guerra'),
         ('western', 'Western'),
     ]
     genero=models.CharField(choices=GENEROS)
     diretor=models.ManyToManyField(Diretor, blank=True) #descobri que ha filmes com + que 1 diretor
-    visualizacoes=models.IntegerField()
     resumo=models.CharField(max_length=500)
 
-class Review(models.Model): #vai ser uma relacao entre utilizador e filme
-    utilizador=models.ForeignKey(User, on_delete=models.CASCADE)
-    filme=models.ForeignKey(Filme, on_delete=models.CASCADE)
-    texto=models.CharField(max_length=500)
-    avaliacao=models.IntegerField(choices=[('1','1'), ('2','2'), ('3','3'), ('4','4'), ('5','5'), ('6','6'), ('7','7'), ('8','8'), ('9','9'), ('10','10')])
-    data=models.DateField(auto_now_add=True) #adiciona a data em que e inserido na bd
 
 
 #uma "tabela" de ligacao 1 para 1 com os utilizadores do django para podermos guardar dados sobre o mesmo sem alterar diretamente a tabela do django (podiamos usando a classe abstrata tho)
@@ -65,3 +58,12 @@ class Utilizador(models.Model):
 
     # para aceder a estes dados temos de fazer usr.Utilizador.imagem por exemplo
 
+
+
+class Review(models.Model): #vai ser uma relacao entre utilizador e filme
+    utilizador = models.ForeignKey(Utilizador, on_delete=models.CASCADE)
+    filme=models.ForeignKey(Filme, on_delete=models.CASCADE)
+    texto=models.CharField(max_length=500)
+    avaliacao=models.IntegerField(choices=[(1,1), (2,2), (3,3), (4,4), (5,5), (6,6), (7,7), (8,8), (9,9), (10,10)])
+    data=models.DateField(auto_now_add=True) #adiciona a data em que e inserido na bd
+    gostos=models.ManyToManyField(Utilizador, blank=True, related_name='reviews_gostadas')
