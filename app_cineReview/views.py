@@ -31,6 +31,20 @@ def logout_view(request):
     logout(request)
     return Response({'msg': 'user '+username+' logged out'})
 
+@api_view(['POST'])
+def create_account(request):
+    username=request.data.get('username')
+    password=request.data.get('password')
+    if User.objects.filter(username=username).exists():
+        return Response({'msg': 'Username já existe'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+    user = User.objects.create_user(username=username, password=password)
+
+    #liga a tabela de Utilizador e user
+    Utilizador.objects.create(user=user)
+
+    return Response({'msg': 'Conta criada com sucesso'}, status=status.HTTP_201_CREATED)
 
 @api_view(['GET', 'POST'])
 def filmes(request):
