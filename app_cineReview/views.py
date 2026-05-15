@@ -192,3 +192,14 @@ def filmesVistosPorUtilizador(request, id):
     filmes=utilizador.visto.all()
     serializer = FilmeSerializer(filmes, many=True)
     return Response(serializer.data)
+
+
+@api_view(['DELETE'])
+def deleteComment(request, id):
+    try:
+        review=Review.objects.filter(pk=id)
+    except Review.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    if(request.user==review.get(Utilizador)):
+        review.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
