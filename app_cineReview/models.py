@@ -5,13 +5,13 @@ from django.db import models
 # descobri que para processar as imagens temos de instalar o pillow
 class Ator(models.Model):
     nome=models.CharField(max_length=50)
-    imagem=models.ImageField(upload_to='imagem_atores/', blank=True)
+    imagem=models.ImageField(upload_to='imagem_atores/', default='default.png')
 
 class Diretor(models.Model):
     nome=models.CharField(max_length=50)
 
 class Filme(models.Model):
-    imagem=models.ImageField(upload_to='imagem_filmes/', blank=True)
+    imagem=models.ImageField(upload_to='imagem_filmes/', default='default.png')
     titulo=models.CharField(max_length=50)
     lancamento=models.DateField()
     elenco=models.ManyToManyField(Ator, blank=True)
@@ -53,7 +53,7 @@ class Filme(models.Model):
 #uma "tabela" de ligacao 1 para 1 com os utilizadores do django para podermos guardar dados sobre o mesmo sem alterar diretamente a tabela do django (podiamos usando a classe abstrata tho)
 class Utilizador(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    imagem=models.ImageField()
+    imagem=models.ImageField('imagem_utilizadores/', default='default.png')
     visto = models.ManyToManyField(Filme, blank=True) #muitos para muitos com filme (lista de filmes vistos)
 
     # para aceder a estes dados temos de fazer usr.Utilizador.imagem por exemplo
