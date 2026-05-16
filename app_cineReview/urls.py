@@ -29,5 +29,5 @@ urlpatterns=[
 
     path('filmesVistosPorUtilizador/<int:id>/', views.filmesVistosPorUtilizador),
 
-    path ('deleteReview')
+    path ('deleteReview', views.deleteComment)
 ]
