@@ -1,6 +1,8 @@
 from django.urls import path
 
 from . import views
+from .views import reviewsDeFilme
+
 urlpatterns=[
     #mostra todos os filmes com todos os detalhes
     path('filmes/', views.filmes), #view para mostrar todos os filmes
@@ -29,5 +31,7 @@ urlpatterns=[
 
     path('filmesVistosPorUtilizador/<int:id>/', views.filmesVistosPorUtilizador),
 
-    path ('deleteReview', views.deleteComment)
+    path ('deleteReview', views.deleteComment),
+
+    path('reviewsDeFilme/<int:id>/', views.reviewsDeFilme)
 ]

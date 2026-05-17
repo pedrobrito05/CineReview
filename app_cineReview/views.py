@@ -67,9 +67,13 @@ def detalhes(request, id):
         filme=Filme.objects.get(pk=id)
     except Filme.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
-
+    nota = Review.objects.filter(filme=filme).aggregate(Avg('avaliacao'))
     serializer=FilmeSerializer(filme)
-    return Response(serializer.data)
+
+    data=serializer.data
+    data['nota_media'] = nota['avaliacao__avg']
+
+    return Response(data)
 
 
 @api_view(['GET'])  #todos os filmes de um ator com id
@@ -203,3 +207,15 @@ def deleteComment(request, id):
     if(request.user==review.get(Utilizador)):
         review.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['GET'])
+def reviewsDeFilme(request, id):
+    reviews=Review.objects.filter(filme__id=id)
+    if not reviews.exists():
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    serializer = ReviewSerializer(reviews, many=True)
+    #data = {}
+    #data['reviews'] = serializer.data
+    #data['total'] = reviews.count()
+    return Response(serializer.data)
