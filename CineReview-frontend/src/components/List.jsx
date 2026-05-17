@@ -1,9 +1,9 @@
 import '../styles.css'
 import {useEffect, useState} from "react";
 import axios from "axios";
-
+import {useNavigate} from "react-router-dom";
 function List() {
-
+    const navigate=useNavigate()
     const URL_FILMES = "http://localhost:8000/api/filmes/";
     const [FilmesList, setFilmesList] = useState([]);
     const getFilmes = () => {
@@ -21,7 +21,7 @@ function List() {
 
           {
               FilmesList.map((filme)=>(
-                    <div className="card" key={filme.id}>
+                    <div className="card" key={filme.id} onClick={()=>navigate(`/filme/${filme.id}/`)}>
                       <div className="poster">
                           <img src={`http://localhost:8000/${filme.imagem}`} />
                         <div className="poster-placeholder">
