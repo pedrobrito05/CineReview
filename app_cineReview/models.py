@@ -49,7 +49,6 @@ class Filme(models.Model):
     resumo=models.CharField(max_length=500)
 
 
-
 #uma "tabela" de ligacao 1 para 1 com os utilizadores do django para podermos guardar dados sobre o mesmo sem alterar diretamente a tabela do django (podiamos usando a classe abstrata tho)
 class Utilizador(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
