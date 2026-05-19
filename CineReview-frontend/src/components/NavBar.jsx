@@ -1,13 +1,30 @@
 import { useState } from 'react'
 import '../styles.css'
-import {useNavigate} from "react-router-dom";
-function NavBar() {
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
+// ✅ Agora recebemos o estado e os modificadores diretamente do App.jsx via Props
+function NavBar({ username, userImage, setUsername, setUserImage }) {
     const [useRealApi, setUseRealApi] = useState(false)
-    const navigate=useNavigate()
+    const navigate = useNavigate()
+    const URL_LOGOUT = 'http://localhost:8000/api/logout/';
+
+    const handleLogout = () => {
+        axios.get(URL_LOGOUT, { withCredentials: true })
+            .then(() => {
+                setUsername(null);
+                setUserImage(null);
+                navigate('/');
+            })
+            .catch(() => console.log('logout failed'));
+    };
+
     return (
         <nav className="navbar">
-            <div style={{display:'flex', alignItems:'center', gap:'28px'}}>
-                <a className="nb-logo" onClick={()=>navigate('/')}><span>Cine</span>Review</a>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '28px' }}>
+                <a className="nb-logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
+                    <span>Cine</span>Review
+                </a>
                 <div className="nb-links">
                     <a className="nb-link active" href="#">Início</a>
                     <a className="nb-link" href="#">Filmes</a>
@@ -16,7 +33,7 @@ function NavBar() {
                     <a className="nb-link" href="#">Diário</a>
                 </div>
             </div>
-            <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <input className="nb-search" placeholder="Pesquisar..." />
 
                 <div className="api-toggle" onClick={() => setUseRealApi(prev => !prev)}>
@@ -27,11 +44,27 @@ function NavBar() {
                     <span className={useRealApi ? 'toggle-option active' : 'toggle-option'}>TMDB</span>
                 </div>
 
-                <a className="nb-btn" href="#">Entrar</a>
-                <div className="nb-avatar">PB</div>
+                {username ? (
+                    <>
+                        <a className="nb-btn" onClick={handleLogout}>Logout</a>
+                        <div className="nb-avatar">
+                            {userImage ? (
+                                <img
+                                    src={`http://localhost:8000${userImage}`}
+                                    alt="Perfil"
+                                    style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
+                                />
+                            ) : (
+                                typeof username === 'string' ? username.slice(0, 2).toUpperCase() : "US"
+                            )}
+                        </div>
+                    </>
+                ) : (
+                    <a className="nb-btn" onClick={() => navigate('/login')}>Entrar</a>
+                )}
             </div>
         </nav>
     )
 }
 
-export default NavBar
+export default NavBar;

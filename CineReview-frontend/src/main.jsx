@@ -5,7 +5,7 @@ import App from './App.jsx'
 import List from "./components/List.jsx";
 import NavBar from "./components/NavBar.jsx";
 import Footer from "./components/Footer.jsx";
-import Details from "./components/Details.jsx";
+import Details from "./pages/Details.jsx";
 import {BrowserRouter} from 'react-router-dom'
 
 createRoot(document.getElementById('root')).render(

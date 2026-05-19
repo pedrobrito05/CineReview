@@ -23,7 +23,7 @@ function List() {
               FilmesList.map((filme)=>(
                     <div className="card" key={filme.id} onClick={()=>navigate(`/filme/${filme.id}/`)}>
                       <div className="poster">
-                          <img src={`http://localhost:8000/${filme.imagem}`} />
+                          <img src={`http://localhost:8000${filme.imagem}`} />
                         <div className="poster-placeholder">
                           <i className="ti ti-movie poster-icon"></i>
                         </div>
