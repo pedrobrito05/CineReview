@@ -8,6 +8,7 @@ import SignUp from "./pages/SignUp.jsx";
 import {useEffect, useState} from "react";
 import axios from "axios";
 import Details from "./pages/Details.jsx";
+import Profile from "./pages/Profile.jsx";
 
 
 function App() {
@@ -48,6 +49,8 @@ function App() {
                 <Route path="/filme/:id" element={<Details username={username} />} />
 
                 <Route path="/login" element={<Login onLoginSuccess={getUtilizador} />} />
+
+                <Route path="/profile" element={<Profile />} />
 
             </Routes>
             <Footer />
