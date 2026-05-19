@@ -276,3 +276,23 @@ body {
 .review-footer { display: flex; align-items: center; gap: 8px; }
 .review-like { background: rgba(255,255,255,0.04); border: 0.5px solid rgba(255,255,255,0.08); border-radius: 4px; padding: 4px 10px; font-size: 12px; color: rgba(255,255,255,0.4); cursor: pointer; display: flex; align-items: center; gap: 5px; }
 .review-like:hover { color: #c084fc; border-color: rgba(192,132,252,0.3); }
+
+
+.review-form { display: flex; flex-direction: column; gap: 12px; }
+.review-form-rating { display: flex; align-items: center; gap: 10px; }
+.review-form-score { width: 60px; background: rgba(255,255,255,0.06); border: 0.5px solid rgba(255,255,255,0.12); border-radius: 6px; padding: 6px 10px; font-size: 14px; color: #fff; text-align: center; outline: none; }
+.review-form-score:focus { border-color: rgba(192,132,252,0.4); }
+.review-form-text { background: rgba(255,255,255,0.04); border: 0.5px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 12px; font-size: 13px; color: #fff; resize: vertical; outline: none; font-family: system-ui, sans-serif; }
+.review-form-text:focus { border-color: rgba(192,132,252,0.4); }
+.review-form-text::placeholder { color: rgba(255,255,255,0.25); }
+
+
+.login-page { min-height: 80vh; display: flex; align-items: center; justify-content: center; }
+.login-card { background: rgba(255,255,255,0.03); border: 0.5px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 40px; width: 100%; max-width: 380px; }
+.login-subtitle { font-size: 13px; color: rgba(255,255,255,0.35); text-align: center; margin-bottom: 28px; }
+.login-form { display: flex; flex-direction: column; gap: 16px; }
+.login-field { display: flex; flex-direction: column; gap: 6px; }
+.login-label { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.4); letter-spacing: 0.03em; }
+.login-input { background: rgba(255,255,255,0.05); border: 0.5px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 10px 14px; font-size: 14px; color: #fff; outline: none; }
+.login-input:focus { border-color: rgba(192,132,252,0.4); }
+.login-input::placeholder { color: rgba(255,255,255,0.2); }
