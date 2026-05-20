@@ -1,7 +1,7 @@
 from django.urls import path
 
 from . import views
-from .views import reviewsDeFilme
+from .views import reviewsDeFilme, dadosDoUser
 
 urlpatterns=[
     #mostra todos os filmes com todos os detalhes
@@ -33,5 +33,20 @@ urlpatterns=[
 
     path ('deleteReview', views.deleteComment),
 
-    path('reviewsDeFilme/<int:id>/', views.reviewsDeFilme)
+    path('reviewsDeFilme/<int:id>/', views.reviewsDeFilme),
+
+    path('reviewsDeUser/<int:id>/', views.reviewsDeUser),
+    path('user/', views.user_view),
+
+    path ('login/', views.login_view),
+
+    path('logout/', views.logout_view),
+
+    path('create_account/', views.create_account),
+
+    path('session-test/', views.session_test),
+    path('post-test/', views.post_test),
+    path('csrf-test/', views.csrf_test),
+
+    path('user/<int:id>/', dadosDoUser)
 ]
