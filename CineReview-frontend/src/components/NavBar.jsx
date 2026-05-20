@@ -3,8 +3,7 @@ import '../styles.css'
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-// ✅ Agora recebemos o estado e os modificadores diretamente do App.jsx via Props
-function NavBar({ username, userImage, setUsername, setUserImage }) {
+function NavBar({ user, setUser }) {
     const [useRealApi, setUseRealApi] = useState(false)
     const navigate = useNavigate()
     const URL_LOGOUT = 'http://localhost:8000/api/logout/';
@@ -12,8 +11,7 @@ function NavBar({ username, userImage, setUsername, setUserImage }) {
     const handleLogout = () => {
         axios.get(URL_LOGOUT, { withCredentials: true })
             .then(() => {
-                setUsername(null);
-                setUserImage(null);
+                setUser(null);
                 navigate('/');
             })
             .catch(() => console.log('logout failed'));
@@ -44,18 +42,19 @@ function NavBar({ username, userImage, setUsername, setUserImage }) {
                     <span className={useRealApi ? 'toggle-option active' : 'toggle-option'}>TMDB</span>
                 </div>
 
-                {username ? (
+                {user?.user?.username ? (
                     <>
                         <a className="nb-btn" onClick={handleLogout}>Logout</a>
                         <div className="nb-avatar">
-                            {userImage ? (
+                            {user.imagem ? (
                                 <img
-                                    src={`http://localhost:8000${userImage}`}
+                                    src={`http://localhost:8000${user.imagem }`}
                                     alt="Perfil"
                                     style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
+                                    onClick={()=>navigate("/profile/"+user.id)}
                                 />
                             ) : (
-                                typeof username === 'string' ? username.slice(0, 2).toUpperCase() : "US"
+                                typeof user.user.username === 'string' ? user.user.username.slice(0, 2).toUpperCase() : "US"
                             )}
                         </div>
                     </>

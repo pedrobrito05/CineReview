@@ -1,131 +1,152 @@
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 
-function Profile(){
-    const [activeTab, setActiveTab] = useState("reviews");
+function Profile() {
+  const { id } = useParams();
 
-  // MOCK DATA
-  // depois ligas isto à API
-  const user = {
-    name: "Daniel Costa",
-    username: "danielc",
-    avatar: null,
-    stats: {
-      watched: 128,
-      reviews: 54,
-      average: 8.4,
-    },
+  const URL_USER = `http://localhost:8000/api/user/${id}/`;
+  const URL_REVIEWS = `http://localhost:8000/api/reviewsDeUser/${id}/`;
+
+  const [activeTab, setActiveTab] = useState("reviews");
+  const [user2, setUser2] = useState(null);
+  const [reviewsDeUser, setReviewsDeUser] = useState([]);
+
+  const fileInputRef = useRef(null);
+  const [preview, setPreview] = useState(null);
+
+  // GET USER
+  useEffect(() => {
+    axios.get(URL_USER)
+      .then((res) => setUser2(res.data))
+      .catch(() => setUser2(null));
+  }, [id]);
+
+  // GET REVIEWS
+  useEffect(() => {
+    axios.get(URL_REVIEWS)
+      .then((res) => setReviewsDeUser(res.data))
+      .catch(() => setReviewsDeUser([]));
+  }, [id]);
+
+  if (!user2) return <div>Loading...</div>;
+
+  const handleAvatarClick = () => {
+    fileInputRef.current.click();
   };
 
-  const reviews = [
-    {
-      movie: "Blade Runner 2049",
-      rating: 9,
-      text: "Visualmente absurdo. Atmosfera perfeita e banda sonora incrível.",
-    },
-    {
-      movie: "Se7en",
-      rating: 10,
-      text: "Um dos thrillers mais tensos e bem realizados de sempre.",
-    },
-  ];
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-  const watchedMovies = [
-    "Interstellar",
-    "The Batman",
-    "Whiplash",
-    "Dune",
-    "Fight Club",
-  ];
+    // preview imediato
+    const previewUrl = URL.createObjectURL(file);
+    setPreview(previewUrl);
 
-  const wishlistMovies = [
-    "The Godfather",
-    "Parasite",
-    "Oldboy",
-    "Memento",
-  ];
+    const formData = new FormData();
+    formData.append("imagem", file);
 
-  const renderInitial = () => {
-    return user.name.charAt(0).toUpperCase();
+    try {
+      const res = axios.put(URL_USER, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          "X-CSRFToken": getCSRFToken(),
+        },
+        withCredentials: true,
+      });
+
+      setUser2(res.data);
+    } catch (err) {
+      console.log("Erro upload avatar:", err);
+    }
   };
-
+  const getCSRFToken = () => {
+  return document.cookie
+    .split("; ")
+    .find(row => row.startsWith("csrftoken="))
+    ?.split("=")[1];
+};
   return (
     <div className="profile-page">
 
       {/* HERO */}
       <section className="profile-hero">
-        <div className="profile-avatar">
-          {user.avatar ? (
-            <img src={user.avatar} alt={user.name} />
-          ) : (
-            renderInitial()
-          )}
+
+        {/* AVATAR */}
+        <div className="profile-avatar" onClick={handleAvatarClick}>
+
+          <input
+            type="file"
+            ref={fileInputRef}
+            style={{ display: "none" }}
+            accept="image/*"
+            onChange={handleFileChange}
+          />
+
+          <img
+            src={
+              preview
+                ? preview
+                : `http://localhost:8000${user2.imagem}`
+            }
+            alt={user2?.user?.username}
+          />
+
+          <div className="avatar-overlay">
+            Alterar foto
+          </div>
         </div>
 
         <div className="profile-info">
-          <h1 className="profile-name">{user.name}</h1>
-          <p className="profile-username">@{user.username}</p>
+          <h1 className="profile-name">
+            {user2?.user?.username}
+          </h1>
+
+          <p className="profile-username">
+            @{user2?.user?.username}
+          </p>
         </div>
+
       </section>
 
       {/* STATS */}
       <section className="profile-stats">
+
         <div className="profile-stat-card">
-          <span className="profile-stat-number">
-            {user.stats.watched}
-          </span>
-          <span className="profile-stat-label">
-            Filmes Vistos
-          </span>
+          <span>{user2?.visto?.length || 0}</span>
+          <p>Filmes Vistos</p>
         </div>
 
         <div className="profile-stat-card">
-          <span className="profile-stat-number">
-            {user.stats.reviews}
-          </span>
-          <span className="profile-stat-label">
-            Reviews
-          </span>
+          <span>{reviewsDeUser?.length || 0}</span>
+          <p>Reviews</p>
         </div>
 
         <div className="profile-stat-card">
-          <span className="profile-stat-number">
-            {user.stats.average}
-          </span>
-          <span className="profile-stat-label">
-            Média de ratings
-          </span>
+          <span>0</span>
+          <p>Média de ratings</p>
         </div>
+
       </section>
 
       {/* TABS */}
       <section className="profile-tabs-wrapper">
         <div className="profile-tabs">
+
           <button
-            className={`profile-tab ${
-              activeTab === "reviews" ? "active" : ""
-            }`}
+            className={`profile-tab ${activeTab === "reviews" ? "active" : ""}`}
             onClick={() => setActiveTab("reviews")}
           >
             Reviews
           </button>
 
           <button
-            className={`profile-tab ${
-              activeTab === "watched" ? "active" : ""
-            }`}
+            className={`profile-tab ${activeTab === "watched" ? "active" : ""}`}
             onClick={() => setActiveTab("watched")}
           >
             Filmes Vistos
           </button>
 
-          <button
-            className={`profile-tab ${
-              activeTab === "wishlist" ? "active" : ""
-            }`}
-            onClick={() => setActiveTab("wishlist")}
-          >
-            Quero Ver
-          </button>
         </div>
       </section>
 
@@ -133,59 +154,72 @@ function Profile(){
       <section className="profile-content">
 
         {activeTab === "reviews" && (
-          <div className="profile-fade">
-            <div className="profile-review-list">
-              {reviews.map((review, index) => (
-                <div className="profile-review-card" key={index}>
-                  <div className="profile-review-top">
-                    <h3>{review.movie}</h3>
+          <div className="profile-review-list">
 
-                    <div className="profile-review-rating">
-                      ★ {review.rating}
-                    </div>
-                  </div>
+            {reviewsDeUser?.map((review) => (
+              <div className="profile-review-card" key={review.id}>
+                <h3>{review.filme.titulo}</h3>
+                <span>★ {review.avaliacao}</span>
+                <p>{review.texto}</p>
+              </div>
+            ))}
 
-                  <p>{review.text}</p>
-                </div>
-              ))}
-            </div>
           </div>
         )}
 
         {activeTab === "watched" && (
-          <div className="profile-fade">
-            <div className="profile-movie-grid">
-              {watchedMovies.map((movie, index) => (
-                <div className="profile-movie-card" key={index}>
-                  <div className="profile-movie-poster">
-                    🎬
+          <div className="grid">
+
+            {user2?.visto?.map((filme) => (
+              <div
+                className="card"
+                key={filme.id}
+                onClick={() => window.location.href = `/filme/${filme.id}/`}
+              >
+
+                <div className="poster">
+
+                  <img
+                    src={`http://localhost:8000${filme.imagem}`}
+                    alt={filme.titulo}
+                  />
+
+                  <div className="views-badge">
+                    {filme.views || 0}
                   </div>
 
-                  <span>{movie}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {activeTab === "wishlist" && (
-          <div className="profile-fade">
-            <div className="profile-movie-grid">
-              {wishlistMovies.map((movie, index) => (
-                <div className="profile-movie-card" key={index}>
-                  <div className="profile-movie-poster wishlist">
-                    ⭐
+                  <div className="badge">
+                    {filme.rating || "0.0"}
                   </div>
 
-                  <span>{movie}</span>
+                  <span className="genre-tag">
+                    {filme.genero}
+                  </span>
+
                 </div>
-              ))}
-            </div>
+
+                <div className="card-title">
+                  {filme.titulo}
+                </div>
+
+                <div className="card-meta">
+                  {filme.lancamento}
+                </div>
+
+                <div className="card-director">
+                  {filme.diretor?.map((d) => d.nome).join(", ")}
+                </div>
+
+              </div>
+            ))}
+
           </div>
         )}
 
       </section>
+
     </div>
   );
 }
-export default Profile
+
+export default Profile;
