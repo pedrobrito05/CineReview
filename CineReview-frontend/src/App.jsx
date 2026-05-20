@@ -9,27 +9,25 @@ import {useEffect, useState} from "react";
 import axios from "axios";
 import Details from "./pages/Details.jsx";
 import Profile from "./pages/Profile.jsx";
+import TestAuth from "./pages/TestAuth.jsx";
 
 
 function App() {
 
-    const [username, setUsername] = useState(null);
-    const [userImage, setUserImage] = useState(null);
+
+    const [user, setUser]=useState(null)
     const URL_USER = "http://localhost:8000/api/user/";
+    axios.defaults.withCredentials = true;
 
     const getUtilizador = () => {
-        axios.get(URL_USER, { withCredentials: true })
-            .then((request) => {
-                if (request.data && request.data.user) {
-                    setUsername(request.data.user.username);
-                    setUserImage(request.data.imagem);
-                }
-            })
-            .catch(() => {
-                setUsername(null);
-                setUserImage(null);
-            });
-    };
+    axios.get(URL_USER, { withCredentials: true })
+        .then((request) => {
+            setUser(request.data);
+        })
+        .catch(() => {
+            setUser(null);
+        });
+};
 
     useEffect(() => {
         getUtilizador();
@@ -37,10 +35,8 @@ function App() {
     return (
         <>
             <NavBar
-                username={username}
-                userImage={userImage}
-                setUsername={setUsername}
-                setUserImage={setUserImage}
+                user={user}
+                setUser={setUser}
             />
 
             <Routes>
@@ -48,12 +44,15 @@ function App() {
 
                 <Route path="/home" element={<Home />} />
 
-                <Route path="/filme/:id" element={<Details username={username} />} />
+                <Route path="/filme/:id" element={<Details user={user} />} />
 
                 <Route path="/login" element={<Login onLoginSuccess={getUtilizador} />} />
 
-                <Route path="/profile" element={<Profile />} />
+                <Route path="/profile/:id" element={<Profile/>} />
 
+                <Route path="/signup" element={<SignUp/>}/>
+
+                <Route path="/teste" element={<TestAuth/>}/>
             </Routes>
             <Footer />
         </>
