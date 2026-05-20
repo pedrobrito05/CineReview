@@ -2,7 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import NavBar from './components/NavBar'
 import Footer from './components/Footer'
 import Home from "./pages/Home.jsx";
-
+import Initial from "./pages/Initial.jsx"
 import Login from "./pages/Login.jsx";
 import SignUp from "./pages/SignUp.jsx";
 import {useEffect, useState} from "react";
@@ -44,7 +44,9 @@ function App() {
             />
 
             <Routes>
-                <Route path="/" element={<Home />} />
+                <Route path="/" element={<Initial />} />
+
+                <Route path="/home" element={<Home />} />
 
                 <Route path="/filme/:id" element={<Details username={username} />} />
 
