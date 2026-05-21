@@ -50,7 +50,7 @@ urlpatterns=[
 
     path('user/<int:id>/', dadosDoUser),
 
-    path('api/importar_tmdb/', views.importar_tmdb),
+    path('importar_tmdb/', views.importar_tmdb),
 
 
 ]

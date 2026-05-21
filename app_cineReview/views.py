@@ -61,7 +61,7 @@ def filmes(request):
         serializer=FilmeSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -102,7 +102,7 @@ def atores(request):
         serializer=AtorSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -116,7 +116,7 @@ def diretores(request):
         serializer=DiretorSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])  #todos os filmes de um ator com id
@@ -330,11 +330,15 @@ def profile_view(request):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser])
 def importar_tmdb(request):
+
+
     titulo = request.data.get('titulo')
     lancamento_str = request.data.get('lancamento')
     genero = request.data.get('genero')
     resumo = request.data.get('resumo', '')
+    imagem = request.FILES.get('imagem')
 
     if not titulo or not genero:
         return Response(
@@ -342,9 +346,12 @@ def importar_tmdb(request):
             status=status.HTTP_400_BAD_REQUEST
         )
 
-    # data segura
     try:
-        lancamento = datetime.datetime.strptime(lancamento_str, "%Y-%m-%d").date()
+        lancamento = datetime.datetime.strptime(
+            lancamento_str,
+            "%Y-%m-%d"
+        ).date()
+
     except:
         lancamento = datetime.date.today()
 
@@ -355,31 +362,49 @@ def importar_tmdb(request):
                 titulo=titulo,
                 lancamento=lancamento,
                 genero=genero,
-                resumo=resumo
+                resumo=resumo,
+                imagem=imagem
             )
 
-
             diretores = request.data.getlist('diretores')
-            for nome in diretores:
-                if nome:
-                    obj, _ = Diretor.objects.get_or_create(nome=nome)
-                    filme.diretor.add(obj)
 
+            for nome in diretores:
+
+                nome = nome.strip()
+
+                if nome:
+                    diretor, _ = Diretor.objects.get_or_create(
+                        nome=nome
+                    )
+
+                    filme.diretor.add(diretor)
 
             elenco = request.data.getlist('elenco')
+
             for nome in elenco:
+
+                nome = nome.strip()
+
                 if nome:
-                    obj, _ = Ator.objects.get_or_create(nome=nome)
-                    filme.elenco.add(obj)
+                    ator, _ = Ator.objects.get_or_create(
+                        nome=nome
+                    )
+
+                    filme.elenco.add(ator)
+
+        serializer = FilmeSerializer(filme)
 
         return Response(
-            {"msg": "Filme importado com sucesso", "id": filme.id},
+            serializer.data,
             status=status.HTTP_201_CREATED
         )
 
     except Exception as e:
-        print(e)
+
+        print("ERRO TMDB:", e)
+
         return Response(
             {"error": str(e)},
             status=status.HTTP_400_BAD_REQUEST
         )
+
