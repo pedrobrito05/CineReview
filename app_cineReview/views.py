@@ -1,6 +1,8 @@
+import datetime
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from django.db import transaction
 from django.db.models import Avg, Sum, Count
 from django.middleware.csrf import get_token
 from django.shortcuts import render
@@ -324,3 +326,60 @@ def profile_view(request):
             serializer.save()
             return Response({'msg': 'Perfil atualizado'}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def importar_tmdb(request):
+    titulo = request.data.get('titulo')
+    lancamento_str = request.data.get('lancamento')
+    genero = request.data.get('genero')
+    resumo = request.data.get('resumo', '')
+
+    if not titulo or not genero:
+        return Response(
+            {"error": "Título e género são obrigatórios"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    # data segura
+    try:
+        lancamento = datetime.datetime.strptime(lancamento_str, "%Y-%m-%d").date()
+    except:
+        lancamento = datetime.date.today()
+
+    try:
+        with transaction.atomic():
+
+            filme = Filme.objects.create(
+                titulo=titulo,
+                lancamento=lancamento,
+                genero=genero,
+                resumo=resumo
+            )
+
+
+            diretores = request.data.getlist('diretores')
+            for nome in diretores:
+                if nome:
+                    obj, _ = Diretor.objects.get_or_create(nome=nome)
+                    filme.diretor.add(obj)
+
+
+            elenco = request.data.getlist('elenco')
+            for nome in elenco:
+                if nome:
+                    obj, _ = Ator.objects.get_or_create(nome=nome)
+                    filme.elenco.add(obj)
+
+        return Response(
+            {"msg": "Filme importado com sucesso", "id": filme.id},
+            status=status.HTTP_201_CREATED
+        )
+
+    except Exception as e:
+        print(e)
+        return Response(
+            {"error": str(e)},
+            status=status.HTTP_400_BAD_REQUEST
+        )

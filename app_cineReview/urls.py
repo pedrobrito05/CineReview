@@ -48,5 +48,9 @@ urlpatterns=[
     path('post-test/', views.post_test),
     path('csrf-test/', views.csrf_test),
 
-    path('user/<int:id>/', dadosDoUser)
+    path('user/<int:id>/', dadosDoUser),
+
+    path('api/importar_tmdb/', views.importar_tmdb),
+
+
 ]
