@@ -763,3 +763,167 @@ body {
 .profile-avatar:hover .avatar-overlay {
   opacity: 1;
 }
+
+/* Botão TMDB */
+.list-header {
+  display: flex;
+  justify-content: flex-end;
+  padding: 1rem;
+}
+
+.btn-tmdb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #032541;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.tmdb-badge {
+  background: #01b4e4;
+  color: #032541;
+  font-weight: bold;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* Modal */
+.tmdb-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.tmdb-modal {
+  background: white;
+  border-radius: 12px;
+  width: 520px;
+  max-height: 80vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.tmdb-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.tmdb-logo {
+  background: #01b4e4;
+  color: #032541;
+  font-weight: bold;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.tmdb-modal-header h2 {
+  flex: 1;
+  margin: 0;
+  font-size: 16px;
+}
+
+.tmdb-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: #666;
+}
+
+.tmdb-search-bar {
+  display: flex;
+  gap: 8px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.tmdb-search-bar input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.tmdb-search-bar button {
+  padding: 8px 16px;
+  background: #01b4e4;
+  color: #032541;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.tmdb-results {
+  overflow-y: auto;
+  flex: 1;
+}
+
+.tmdb-result-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.tmdb-result-item img {
+  width: 46px;
+  height: 69px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.tmdb-no-poster {
+  width: 46px;
+  height: 69px;
+  background: #eee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-size: 20px;
+}
+
+.tmdb-result-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tmdb-result-info span {
+  font-size: 13px;
+  color: #888;
+}
+
+.tmdb-import-btn {
+  padding: 6px 14px;
+  background: #032541;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.tmdb-import-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

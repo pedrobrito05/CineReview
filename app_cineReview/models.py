@@ -44,7 +44,7 @@ class Filme(models.Model):
         ('war', 'Guerra'),
         ('western', 'Western'),
     ]
-    genero=models.CharField(choices=GENEROS)
+    genero=models.CharField(max_length=30, choices=GENEROS)
     diretor=models.ManyToManyField(Diretor, blank=True) #descobri que ha filmes com + que 1 diretor
     resumo=models.CharField(max_length=500)
 
@@ -52,7 +52,7 @@ class Filme(models.Model):
 #uma "tabela" de ligacao 1 para 1 com os utilizadores do django para podermos guardar dados sobre o mesmo sem alterar diretamente a tabela do django (podiamos usando a classe abstrata tho)
 class Utilizador(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    imagem=models.ImageField('imagem_utilizadores/', default='default.png')
+    imagem=models.ImageField(upload_to='imagem_utilizadores/', default='default.png')
     visto = models.ManyToManyField(Filme, blank=True) #muitos para muitos com filme (lista de filmes vistos)
 
     # para aceder a estes dados temos de fazer usr.Utilizador.imagem por exemplo
