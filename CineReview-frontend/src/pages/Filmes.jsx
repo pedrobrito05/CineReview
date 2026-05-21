@@ -2,7 +2,7 @@ import NavBar from '../components/NavBar'
 import Footer from '../components/Footer'
 import List from '../components/List'
 
-function Home() {
+function Filmes() {
     return (
         <>
 
@@ -12,4 +12,4 @@ function Home() {
     )
 }
 
-export default Home
+export default Filmes

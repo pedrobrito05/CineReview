@@ -905,6 +905,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  color:black;
 }
 
 .tmdb-result-info span {
