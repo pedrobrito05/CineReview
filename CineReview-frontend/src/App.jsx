@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import NavBar from './components/NavBar'
 import Footer from './components/Footer'
-import Home from "./pages/Home.jsx";
+import Filmes from "./pages/Filmes.jsx";
 import Initial from "./pages/Initial.jsx"
 import Login from "./pages/Login.jsx";
 import SignUp from "./pages/SignUp.jsx";
@@ -42,7 +42,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<Initial />} />
 
-                <Route path="/home" element={<Home />} />
+                <Route path="/filmes" element={<Filmes />} />
 
                 <Route path="/filme/:id" element={<Details user={user} />} />
 

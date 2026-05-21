@@ -11,25 +11,26 @@ const apiAxios = axios.create({
 });
 
 const GENERO_MAP = {
-  "Action": "action",
-  "Adventure": "adventure",
-  "Animation": "animation",
-  "Comedy": "comedy",
-  "Crime": "crime",
-  "Documentary": "documentary",
-  "Drama": "drama",
-  "Family": "family",
-  "Fantasy": "fantasy",
-  "History": "history",
-  "Horror": "horror",
-  "Music": "music",
-  "Mystery": "mystery",
-  "Romance": "romance",
-  "Science Fiction": "sci_fi",
-  "Thriller": "thriller",
-  "War": "war",
-  "Western": "western",
+28: "action",
+12: "adventure",
+16: "animation",
+35: "comedy",
+80: "crime",
+99: "documentary",
+18: "drama",
+10751: "family",
+14: "fantasy",
+36: "history",
+27: "horror",
+10402: "music",
+9648: "mystery",
+10749: "romance",
+878: "sci_fi",
+53: "thriller",
+10752: "war",
+37: "western"
 };
+
 
 function getCookie(name) {
   let cookieValue = null;
@@ -115,8 +116,8 @@ function TmdbModal({ onClose, onImported }) {
 
       const d = details.data;
 
-      const generoTmdb = d.genres?.[0]?.name || "";
-      const genero = GENERO_MAP[generoTmdb] || "drama";
+      const generoId = d.genres?.[0]?.id;
+      const genero = GENERO_MAP[generoId] || "drama";
 
       const diretores = credits.data.crew
         .filter(p => p.job === "Director")
@@ -176,7 +177,7 @@ function TmdbModal({ onClose, onImported }) {
         }
       });
 
-      onImported();
+      navigate("/filmes");
       onClose();
 
     } catch (err) {

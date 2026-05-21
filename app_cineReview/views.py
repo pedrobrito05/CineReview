@@ -237,9 +237,7 @@ def reviewsDeFilme(request, id):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     serializer = ReviewSerializer(reviews, many=True)
-    #data = {}
-    #data['reviews'] = serializer.data
-    #data['total'] = reviews.count()
+
     return Response(serializer.data)
 
 @api_view(['GET'])

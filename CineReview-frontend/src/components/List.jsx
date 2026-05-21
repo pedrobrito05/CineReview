@@ -29,20 +29,7 @@ function List() {
 
   return (
     <>
-      <div className="list-header">
 
-        <button
-          className="btn-tmdb"
-          onClick={() => setShowTmdb(true)}
-        >
-          <span className="tmdb-badge">
-            TMDB
-          </span>
-
-          Importar da TMDB
-        </button>
-
-      </div>
 
       <div className="grid">
 
