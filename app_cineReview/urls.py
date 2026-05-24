@@ -1,7 +1,7 @@
 from django.urls import path
 
 from . import views
-from .views import reviewsDeFilme, dadosDoUser
+from .views import reviewsDeFilme, dadosDoUser, adicionarVisto, likeReview, apagarFilme, apagarReview, getUsers
 
 urlpatterns=[
     #mostra todos os filmes com todos os detalhes
@@ -52,5 +52,12 @@ urlpatterns=[
 
     path('importar_tmdb/', views.importar_tmdb),
 
+    path('visto/', adicionarVisto),
 
+    path('likeReview/<int:id>/', likeReview),
+
+    path('filmes/<int:id>/apagar/', apagarFilme),
+    path('reviews/<int:id>/apagar/', apagarReview),
+
+    path('users/', getUsers)
 ]

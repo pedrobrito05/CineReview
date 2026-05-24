@@ -54,7 +54,10 @@ def create_account(request):
 @api_view(['GET', 'POST'])
 def filmes(request):
     if request.method=='GET' :
-        filmes_list=Filme.objects.all()
+        filmes_list = Filme.objects.annotate(
+            visualizacoes=Count('utilizador', distinct=True),
+            nota_media=Avg('review__avaliacao')
+        )
         serializer=FilmeSerializer(filmes_list, many=True)
         return Response(serializer.data)
     elif request.method=='POST':
@@ -232,7 +235,7 @@ def deleteComment(request, id):
 
 @api_view(['GET'])
 def reviewsDeFilme(request, id):
-    reviews=Review.objects.filter(filme__id=id)
+    reviews=Review.objects.filter(filme__id=id).annotate(total_gostos=Count('gostos')).order_by('-total_gostos')
     if not reviews.exists():
         return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -298,11 +301,40 @@ def reviewsDeUser(request, id):
     serializer = ReviewSerializer(reviews, many=True)
     return Response(serializer.data)
 
-@api_view(['GET'])
+from rest_framework.decorators import api_view, parser_classes
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.response import Response
+from rest_framework import status
+
+@api_view(['GET', 'PUT'])
+@parser_classes([MultiPartParser, FormParser])
 def dadosDoUser(request, id):
-    utilizador = Utilizador.objects.get(user__id=id)
-    serializer = UtilizadorSerializer(utilizador)
-    return Response(serializer.data)
+    try:
+        utilizador = Utilizador.objects.get(user__id=id)
+    except Utilizador.DoesNotExist:
+        return Response(
+            {"error": "Utilizador não encontrado"},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+    if request.method == 'GET':
+        serializer = UtilizadorSerializer(utilizador)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = UtilizadorSerializer(
+            utilizador,
+            data=request.data,
+            partial=True
+        )
+
+        if serializer.is_valid():
+            serializer.save()
+
+
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET', 'PUT'])
@@ -406,3 +438,82 @@ def importar_tmdb(request):
             status=status.HTTP_400_BAD_REQUEST
         )
 
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def adicionarVisto(request):
+    filme_id = request.data.get('filme')
+    if not filme_id:
+        return Response({'error': 'O campo filme é obrigatório.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        filme_obj = Filme.objects.get(pk=filme_id)
+        perfil_utilizador = Utilizador.objects.get(user=request.user)
+    except Filme.DoesNotExist:
+        return Response({'error': 'Filme não encontrado.'}, status=status.HTTP_404_NOT_FOUND)
+    except Utilizador.DoesNotExist:
+        return Response({'error': 'Perfil não encontrado.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+    if filme_obj in perfil_utilizador.visto.all():
+        perfil_utilizador.visto.remove(filme_obj)
+        return Response({'msg': 'Filme removido dos vistos.'}, status=status.HTTP_200_OK)
+    else:
+        perfil_utilizador.visto.add(filme_obj)
+        return Response({'msg': 'Filme marcado como visto.'}, status=status.HTTP_200_OK)
+    #carrega uma vez coloca nos vistos, carrega outra retira
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def likeReview(request, id):
+    try:
+        review = Review.objects.get(pk=id)
+        perfil_utilizador = Utilizador.objects.get(user=request.user)
+    except Review.DoesNotExist:
+        return Response({'error': 'Review não encontrada.'}, status=status.HTTP_404_NOT_FOUND)
+    except Utilizador.DoesNotExist:
+        return Response({'error': 'Perfil não encontrado.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+    if perfil_utilizador in review.gostos.all():
+        review.gostos.remove(perfil_utilizador)
+        return Response({'msg': 'Like removido.', 'liked': False}, status=status.HTTP_200_OK)
+    else:
+        review.gostos.add(perfil_utilizador)
+        return Response({'msg': 'Like adicionado.', 'liked': True}, status=status.HTTP_200_OK)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def apagarFilme(request, id):
+    try:
+        filme = Filme.objects.get(pk=id)
+    except Filme.DoesNotExist:
+        return Response({'error': 'Filme não encontrado.'}, status=status.HTTP_404_NOT_FOUND)
+
+    if not request.user.is_superuser:
+        return Response({'error': 'Sem permissões.'}, status=status.HTTP_403_FORBIDDEN)
+
+    filme.delete()
+    return Response({'msg': 'Filme apagado.'}, status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def apagarReview(request, id):
+    try:
+        review = Review.objects.get(pk=id)
+    except Review.DoesNotExist:
+        return Response({'error': 'Review não encontrada.'}, status=status.HTTP_404_NOT_FOUND)
+
+    perfil_utilizador = Utilizador.objects.get(user=request.user)
+
+    if review.utilizador != perfil_utilizador and not request.user.is_superuser:
+        return Response({'error': 'Sem permissões.'}, status=status.HTTP_403_FORBIDDEN)
+
+    review.delete()
+    return Response({'msg': 'Review apagada.'}, status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['GET'])
+def getUsers(request):
+    user_list = Utilizador.objects.all()
+    serializer = UtilizadorSerializer(user_list, many=True)
+    return Response(serializer.data)
