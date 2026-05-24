@@ -53,7 +53,7 @@ function Initial() {
                 <p>Partilhe a sua experiência.
                 <br />Veja opiniões e descubra grandes filmes.</p>
 
-                <button onClick={() => navigate('/home')}>
+                <button onClick={() => navigate('/filmes')}>
                     Ver Reviews
                 </button>
 

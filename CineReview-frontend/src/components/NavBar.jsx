@@ -44,25 +44,18 @@ function NavBar({ user, setUser, onImported }) {
                     </a>
 
                     <div className="nb-links">
-                        <a className="nb-link" href="#">
+                        <a className="nb-link" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
                             Início
                         </a>
 
-                        <a className='nb-links' onClick={ ()=>navigate('/filmes')}>
+                        <a className="nb-link" onClick={() => navigate('/filmes')} style={{ cursor: 'pointer' }}>
                             Filmes
                         </a>
 
-                        <a className="nb-link" href="#">
-                            Listas
-                        </a>
-
-                        <a className="nb-link" href="#">
+                        <a className="nb-link" onClick={() => navigate('/users')} style={{ cursor: 'pointer' }}>
                             Membros
                         </a>
 
-                        <a className="nb-link" href="#">
-                            Diário
-                        </a>
                     </div>
                 </div>
 
@@ -74,12 +67,8 @@ function NavBar({ user, setUser, onImported }) {
                     }}
                 >
 
-                    <input
-                        className="nb-search"
-                        placeholder="Pesquisar..."
-                    />
 
-                    {user?.user?.username && (
+                    { user?.user?.username && user?.user?.is_superuser && (
                         <button
                             className="btn-tmdb"
                             onClick={() => setShowTmdb(true)}
@@ -97,6 +86,7 @@ function NavBar({ user, setUser, onImported }) {
                             <a
                                 className="nb-btn"
                                 onClick={handleLogout}
+                                style={{cursor: 'pointer'}}
                             >
                                 Logout
                             </a>
@@ -111,11 +101,13 @@ function NavBar({ user, setUser, onImported }) {
                                             width: '100%',
                                             height: '100%',
                                             borderRadius: '50%',
-                                            objectFit: 'cover'
+                                            objectFit: 'cover',
+                                            cursor:"pointer"
                                         }}
                                         onClick={() =>
                                             navigate("/profile/" + user.id)
                                         }
+
                                     />
                                 ) : (
                                     typeof user.user.username === 'string'
@@ -131,6 +123,7 @@ function NavBar({ user, setUser, onImported }) {
                         <a
                             className="nb-btn"
                             onClick={() => navigate('/login')}
+                            style={{cursor: 'pointer'}}
                         >
                             Entrar
                         </a>
@@ -141,7 +134,7 @@ function NavBar({ user, setUser, onImported }) {
             {showTmdb && (
                 <TmdbModal
                     onClose={() => setShowTmdb(false)}
-                    onImported={()=>navigate('/home')}
+                    onImported={() => { onImported(); setShowTmdb(false); }}
                 />
             )}
         </>
