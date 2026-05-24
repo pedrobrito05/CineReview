@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.db.models import Avg
 from rest_framework import serializers
 from .models import Filme, Ator, Diretor, Review, Utilizador
 
@@ -7,7 +8,7 @@ from .models import Filme, Ator, Diretor, Review, Utilizador
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'first_name', 'last_name')
+        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'is_superuser')
 
 class AtorSerializer(serializers.ModelSerializer):
     class Meta:
@@ -24,23 +25,28 @@ class DiretorSerializer(serializers.ModelSerializer):
 
 
 class FilmeSerializer(serializers.ModelSerializer):
+    visualizacoes = serializers.IntegerField(read_only=True, default=0)
+    nota_media = serializers.FloatField(read_only=True, default=None)
     elenco = AtorSerializer(many=True, read_only=True)
     diretor = DiretorSerializer(many=True, read_only=True)
     class Meta:
-        model=Filme
-        fields=('id','imagem', 'titulo', 'lancamento','elenco', 'diretor', 'genero', 'resumo')
+        model = Filme
+        fields = '__all__'
 
 
 class UtilizadorSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     visto = FilmeSerializer(many=True, read_only=True)
+    media_avaliacoes = serializers.SerializerMethodField()
 
     class Meta:
         model = Utilizador
-        fields = ('id', 'user', 'imagem', 'visto')
+        fields = ('id', 'user', 'imagem', 'visto', 'media_avaliacoes')
 
-
-
+    def get_media_avaliacoes(self, obj):
+        media = Review.objects.filter(utilizador=obj).aggregate(Avg('avaliacao'))
+        valor = media['avaliacao__avg']
+        return round(valor, 1) if valor else 0
 
 
 class ReviewSerializer(serializers.ModelSerializer):
