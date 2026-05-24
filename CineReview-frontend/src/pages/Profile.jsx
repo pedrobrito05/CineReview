@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-function Profile() {
+function Profile({ user }) {
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -85,28 +85,30 @@ function Profile() {
       {/* HERO */}
       <section className="profile-hero">
 
-        <div className="profile-avatar" onClick={handleAvatarClick}>
+              <div
+          className="profile-avatar"
+          onClick={user?.id === parseInt(id) ? handleAvatarClick : undefined}
+          style={{ cursor: user?.id === parseInt(id) ? 'pointer' : 'default' }}
+      >
           <input
-            type="file"
-            ref={fileInputRef}
-            style={{ display: "none" }}
-            accept="image/*"
-            onChange={handleFileChange}
+              type="file"
+              ref={fileInputRef}
+              style={{ display: "none" }}
+              accept="image/*"
+              onChange={handleFileChange}
           />
 
           <img
-            src={
-              preview
-                ? preview
-                : `http://localhost:8000${user2.imagem}`
-            }
-            alt={user2.user?.username}
+              src={preview ? preview : `http://localhost:8000${user2.imagem}`}
+              alt={user2.user?.username}
           />
 
-          <div className="avatar-overlay">
-            Alterar foto
-          </div>
-        </div>
+          {user?.id === parseInt(id) && (
+              <div className="avatar-overlay">
+                  Alterar foto
+              </div>
+          )}
+      </div>
 
         <div className="profile-info">
           <h1 className="profile-name">
@@ -132,7 +134,7 @@ function Profile() {
         </div>
 
         <div className="profile-stat-card">
-          <span>0</span>
+          <span>{user2.media_avaliacoes}</span>
           <p>Média de ratings</p>
         </div>
       </section>
@@ -190,16 +192,9 @@ function Profile() {
                 <div className="poster">
                   <img
                     src={`http://localhost:8000${filme.imagem}`}
-                    alt={filme.titulo}
+                    alt={filme.visualizacoes}
                   />
 
-                  <div className="views-badge">
-                    {filme.views || 0}
-                  </div>
-
-                  <div className="badge">
-                    {filme.rating || "0.0"}
-                  </div>
 
                   <span className="genre-tag">
                     {filme.genero}

@@ -177,7 +177,7 @@ function TmdbModal({ onClose, onImported }) {
         }
       });
 
-      navigate("/filmes");
+      onImported();
       onClose();
 
     } catch (err) {

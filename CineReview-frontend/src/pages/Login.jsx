@@ -64,6 +64,10 @@ function Login({ onLoginSuccess }) {
                     <button type="button" className="btn-secondary" style={{ width: '100%', justifyContent: 'center' }} onClick={() => navigate('/')}>
                         <i className="ti ti-arrow-left" aria-hidden="true"></i> Voltar
                     </button>
+
+                    <button type="button" className="btn-secondary" style={{ width: '100%', justifyContent: 'center' }} onClick={() => navigate('/signup')}>
+                        <i className="ti ti-user icon-user" aria-hidden="true"></i> Criar conta
+                    </button>
                 </form>
             </div>
         </div>
