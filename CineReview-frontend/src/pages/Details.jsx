@@ -190,7 +190,13 @@ function Details({ user }) {
                 <div className="cast-grid">
                     {filme.elenco.map((ator) => (
                         <div className="cast-card" key={ator.id}>
-                            <div className="cast-avatar">MF</div>
+                            <div className="cast-avatar">
+                                <img
+                                    src={`http://localhost:8000${ator.imagem}`}
+                                    alt={ator.nome}
+                                    style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
+                                />
+                            </div>
                             <div className="cast-info">
                                 <span className="cast-name">{ator.nome}</span>
                             </div>
@@ -205,7 +211,17 @@ function Details({ user }) {
                     {review.map((rev) => (
                         <div className="review-card" key={rev.id}>
                             <div className="review-header">
-                                <div className="cast-avatar">PB</div>
+                                <div className="cast-avatar">
+                                    {rev.utilizador?.imagem ? (
+                                        <img
+                                            src={`http://localhost:8000${rev.utilizador.imagem}`}
+                                            alt={rev.utilizador?.user?.username}
+                                            style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
+                                        />
+                                    ) : (
+                                        rev.utilizador?.user?.username?.slice(0, 2).toUpperCase()
+                                    )}
+                                </div>
                                 <div className="review-meta">
                                     <span className="cast-name">{rev.utilizador?.user?.username}</span>
                                     <span className="cast-role">{rev.data}</span>
